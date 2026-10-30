@@ -25,12 +25,24 @@ final class ClosureReceiverParameterTests: ParserTestCase {
     assertParse("_ = { (self: Item) in self.value }")
   }
 
+  func testReceiverWithWildcardLabel() {
+    assertParse("_ = { (_ self: Item) in self.value }")
+  }
+
   func testReceiverAmongOtherParameters() {
     assertParse("_ = { before, self, after in self.value + before + after }")
   }
 
   func testCaptureAliasAndReceiver() {
     assertParse("_ = { [owner = self] self in owner.use(self) }")
+  }
+
+  func testTypedReceiverAmongOtherParameters() {
+    assertParse("_ = { (before: Int, self: Item, after: Int) in self.value + before + after }")
+  }
+
+  func testNestedReceivers() {
+    assertParse("_ = { self in with(self.child) { self in self.value } }")
   }
 
   func testBorrowingReceiver() {
@@ -49,12 +61,23 @@ final class ClosureReceiverParameterTests: ParserTestCase {
     assertParse("_ = { (self: Item) async throws -> Int in try await self.load() }")
   }
 
+  func testAttributedReceiverWithCaptureAlias() {
+    assertParse("_ = { @Sendable [owner = self] (self: Item) async -> Int in await owner.use(self) }")
+  }
+
   func testNestedCapture() {
     assertParse("_ = { self in self.callback = { [weak self] in self?.finish() } }")
   }
 
   func testEscapedSelfStaysAnIdentifier() {
     let tree = Parser.parse(source: "_ = { `self` in self.value }", languageFeatures: languageFeatures)
+    let parameter = tree.tokens(viewMode: .sourceAccurate).first { $0.text == "`self`" }
+    XCTAssertEqual(parameter?.tokenKind, .identifier("`self`"))
+    XCTAssertFalse(tree.hasError)
+  }
+
+  func testEscapedTypedSelfStaysAnIdentifier() {
+    let tree = Parser.parse(source: "_ = { (`self`: Item) in self.value }", languageFeatures: languageFeatures)
     let parameter = tree.tokens(viewMode: .sourceAccurate).first { $0.text == "`self`" }
     XCTAssertEqual(parameter?.tokenKind, .identifier("`self`"))
     XCTAssertFalse(tree.hasError)
@@ -81,8 +104,33 @@ final class ClosureReceiverParameterTests: ParserTestCase {
     XCTAssertFalse(tree.hasError)
   }
 
+  func testFeatureDoesNotChangeFunctionParameterTokens() {
+    let tree = Parser.parse(source: "func f(self: Item) {}", languageFeatures: languageFeatures)
+    let parameter = tree.tokens(viewMode: .sourceAccurate).first { $0.text == "self" }
+    XCTAssertEqual(parameter?.tokenKind, .identifier("self"))
+    XCTAssertFalse(tree.hasError)
+  }
+
+  func testOnlyLocalParameterNameSelectsReceiverToken() {
+    let tree = Parser.parse(
+      source: "let closure = { (_ self: Item) in self.value }",
+      languageFeatures: languageFeatures
+    )
+    let closure = tree.statements.first?.item.as(VariableDeclSyntax.self)?
+      .bindings.first?.initializer?.value.as(ClosureExprSyntax.self)
+    guard case .parameterClause(let parameters) = closure?.signature?.parameterClause else {
+      return XCTFail("expected a typed closure parameter clause")
+    }
+    XCTAssertEqual(parameters.parameters.first?.firstName.tokenKind, .wildcard)
+    XCTAssertEqual(parameters.parameters.first?.secondName?.tokenKind, .keyword(.self))
+    XCTAssertFalse(tree.hasError)
+  }
+
   func testSelfExpressionIsNotAReceiverSignature() {
     assertParse("_ = { self.value }")
+    assertParse("_ = { self }")
+    assertParse("_ = { self[0] }")
+    assertParse("_ = { (self) }")
   }
 
   func testFeatureIsOptIn() {

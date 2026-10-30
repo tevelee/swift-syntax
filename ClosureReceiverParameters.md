@@ -13,15 +13,17 @@ receiver lookup, capture, ownership, or lifetime semantics.
 
 ## Validation
 
-The focused slice passed 40 parser tests, including 15 new receiver tests, with
-raw-syntax validation enabled. CodeGeneration's 16 `ValidateSyntaxNodes` tests
-also passed. Sources were regenerated using the repository's generator.
+The full SwiftParser suite passed 2,759 tests, with 3 skipped and no failures,
+including 22 receiver tests, with raw-syntax validation enabled. CodeGeneration's
+16 `ValidateSyntaxNodes` tests also passed. Sources were regenerated using the
+repository's generator. A branch-specific GitHub Actions workflow repeats the
+parser and schema suites and checks generated sources on Linux.
 
 With a compatible Swift toolchain:
 
 ```sh
 SKIP_LONG_TESTS=1 SWIFTSYNTAX_ENABLE_RAWSYNTAX_VALIDATION=1 swift test -j 4 \
-  --filter 'ClosureReceiverParameterTests|ClosureMissingInTests|TrailingClosuresTests|ExpressionTests.testClosureLiterals'
+  --filter SwiftParserTest
 swift test --package-path CodeGeneration -j 4 --filter ValidateSyntaxNodes
 ```
 
