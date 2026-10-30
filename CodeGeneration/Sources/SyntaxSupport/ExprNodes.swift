@@ -445,12 +445,12 @@ public let EXPR_NODES: [Node] = [
       ),
       Child(
         name: "firstName",
-        kind: .token(choices: [.token(.identifier), .token(.wildcard)]),
+        kind: .token(choices: [.token(.identifier), .token(.wildcard), .keyword(.self)]),
         documentation: "The label of this parameter that will be used when the closure is called."
       ),
       Child(
         name: "secondName",
-        kind: .token(choices: [.token(.identifier), .token(.wildcard)]),
+        kind: .token(choices: [.token(.identifier), .token(.wildcard), .keyword(.self)]),
         documentation:
           "If this is specified, it is the name by which the parameter can be referenced inside the closure body. If it is `nil`, the closure parameter is referenced by the first name.",
         isOptional: true
@@ -582,7 +582,7 @@ public let EXPR_NODES: [Node] = [
     children: [
       Child(
         name: "name",
-        kind: .token(choices: [.token(.identifier), .token(.wildcard)]),
+        kind: .token(choices: [.token(.identifier), .token(.wildcard), .keyword(.self)]),
         nameForDiagnostics: "name"
       ),
       Child(

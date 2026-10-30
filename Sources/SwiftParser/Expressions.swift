@@ -1956,7 +1956,9 @@ extension Parser {
   mutating func parseClosureSignatureIfPresent() -> RawClosureSignatureSyntax? {
     // If we have a leading token that may be part of the closure signature, do a
     // speculative parse to validate it and look for 'in'.
-    guard self.at(.atSign, .leftParen, .leftSquare) || self.at(.wildcard, .identifier) else {
+    guard self.at(.atSign, .leftParen, .leftSquare) || self.at(.wildcard, .identifier)
+      || (self.languageFeatures.contains(.closureReceiverParameters) && self.at(.keyword(.self)))
+    else {
       // No closure signature.
       return nil
     }
@@ -2056,6 +2058,11 @@ extension Parser {
             if let identifier = self.consume(if: .identifier) {
               unexpected = nil
               name = identifier
+            } else if self.languageFeatures.contains(.closureReceiverParameters),
+              let receiver = self.consume(if: .keyword(.self))
+            {
+              unexpected = nil
+              name = receiver
             } else {
               (unexpected, name) = self.expect(.wildcard)
             }
@@ -2806,7 +2813,9 @@ extension Parser.Lookahead {
       {
         lookahead.skipSingle()
       }
-    } else if lookahead.at(.identifier) || lookahead.at(.wildcard) {
+    } else if lookahead.at(.identifier) || lookahead.at(.wildcard)
+      || (lookahead.languageFeatures.contains(.closureReceiverParameters) && lookahead.at(.keyword(.self)))
+    {
       // Parse identifier (',' identifier)*
       lookahead.consumeAnyToken()
 
@@ -2824,7 +2833,9 @@ extension Parser.Lookahead {
       while consumeOptionalTypeAnnotation() && lookahead.consume(if: .comma) != nil
         && lookahead.hasProgressed(&parametersProgress)
       {
-        if lookahead.at(.identifier) || lookahead.at(.wildcard) {
+        if lookahead.at(.identifier) || lookahead.at(.wildcard)
+          || (lookahead.languageFeatures.contains(.closureReceiverParameters) && lookahead.at(.keyword(.self)))
+        {
           lookahead.consumeAnyToken()
           continue
         }

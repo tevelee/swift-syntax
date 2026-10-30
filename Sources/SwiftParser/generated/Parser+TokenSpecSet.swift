@@ -803,6 +803,7 @@ extension ClosureParameterSyntax {
   public enum FirstNameOptions: TokenSpecSet {
     case identifier
     case wildcard
+    case `self`
 
     init?(lexeme: Lexer.Lexeme, languageFeatures: Parser.LanguageFeatures) {
       func token() -> Self? {
@@ -815,7 +816,18 @@ extension ClosureParameterSyntax {
           nil
         }
       }
-      guard let match = token() else {
+      func keyword() -> Self? {
+        guard let keyword = lexeme.keyword else {
+          return nil
+        }
+        return switch keyword {
+        case .self:
+          .self
+        default:
+          nil
+        }
+      }
+      guard let match = token() ?? keyword() else {
         return nil
       }
       self = match
@@ -827,6 +839,8 @@ extension ClosureParameterSyntax {
         self = .identifier
       case TokenSpec(.wildcard):
         self = .wildcard
+      case TokenSpec(.self):
+        self = .self
       default:
         return nil
       }
@@ -838,6 +852,8 @@ extension ClosureParameterSyntax {
         return .identifier
       case .wildcard:
         return .wildcard
+      case .self:
+        return .keyword(.self)
       }
     }
 
@@ -851,6 +867,8 @@ extension ClosureParameterSyntax {
         return .identifier("")
       case .wildcard:
         return .wildcardToken()
+      case .self:
+        return .keyword(.self)
       }
     }
   }
@@ -861,6 +879,7 @@ extension ClosureParameterSyntax {
   public enum SecondNameOptions: TokenSpecSet {
     case identifier
     case wildcard
+    case `self`
 
     init?(lexeme: Lexer.Lexeme, languageFeatures: Parser.LanguageFeatures) {
       func token() -> Self? {
@@ -873,7 +892,18 @@ extension ClosureParameterSyntax {
           nil
         }
       }
-      guard let match = token() else {
+      func keyword() -> Self? {
+        guard let keyword = lexeme.keyword else {
+          return nil
+        }
+        return switch keyword {
+        case .self:
+          .self
+        default:
+          nil
+        }
+      }
+      guard let match = token() ?? keyword() else {
         return nil
       }
       self = match
@@ -885,6 +915,8 @@ extension ClosureParameterSyntax {
         self = .identifier
       case TokenSpec(.wildcard):
         self = .wildcard
+      case TokenSpec(.self):
+        self = .self
       default:
         return nil
       }
@@ -896,6 +928,8 @@ extension ClosureParameterSyntax {
         return .identifier
       case .wildcard:
         return .wildcard
+      case .self:
+        return .keyword(.self)
       }
     }
 
@@ -909,6 +943,8 @@ extension ClosureParameterSyntax {
         return .identifier("")
       case .wildcard:
         return .wildcardToken()
+      case .self:
+        return .keyword(.self)
       }
     }
   }
@@ -919,6 +955,7 @@ extension ClosureShorthandParameterSyntax {
   public enum NameOptions: TokenSpecSet {
     case identifier
     case wildcard
+    case `self`
 
     init?(lexeme: Lexer.Lexeme, languageFeatures: Parser.LanguageFeatures) {
       func token() -> Self? {
@@ -931,7 +968,18 @@ extension ClosureShorthandParameterSyntax {
           nil
         }
       }
-      guard let match = token() else {
+      func keyword() -> Self? {
+        guard let keyword = lexeme.keyword else {
+          return nil
+        }
+        return switch keyword {
+        case .self:
+          .self
+        default:
+          nil
+        }
+      }
+      guard let match = token() ?? keyword() else {
         return nil
       }
       self = match
@@ -943,6 +991,8 @@ extension ClosureShorthandParameterSyntax {
         self = .identifier
       case TokenSpec(.wildcard):
         self = .wildcard
+      case TokenSpec(.self):
+        self = .self
       default:
         return nil
       }
@@ -954,6 +1004,8 @@ extension ClosureShorthandParameterSyntax {
         return .identifier
       case .wildcard:
         return .wildcard
+      case .self:
+        return .keyword(.self)
       }
     }
 
@@ -967,6 +1019,8 @@ extension ClosureShorthandParameterSyntax {
         return .identifier("")
       case .wildcard:
         return .wildcardToken()
+      case .self:
+        return .keyword(.self)
       }
     }
   }

@@ -61,10 +61,12 @@ extension Parser {
     let secondName: RawTokenSyntax?
   }
 
-  fileprivate mutating func parseParameterNames() -> ParameterNames {
+  fileprivate mutating func parseParameterNames(allowReceiver: Bool = false) -> ParameterNames {
     let unexpectedBeforeFirstName: RawUnexpectedNodesSyntax?
     let firstName: RawTokenSyntax?
-    if self.atArgumentLabel(allowDollarIdentifier: true) {
+    if allowReceiver, self.at(.keyword(.self)) {
+      (unexpectedBeforeFirstName, firstName) = (nil, self.consumeAnyToken())
+    } else if self.atArgumentLabel(allowDollarIdentifier: true) {
       (unexpectedBeforeFirstName, firstName) = self.parseArgumentLabel()
     } else {
       (unexpectedBeforeFirstName, firstName) = (nil, nil)
@@ -72,7 +74,9 @@ extension Parser {
 
     let unexpectedBeforeSecondName: RawUnexpectedNodesSyntax?
     let secondName: RawTokenSyntax?
-    if self.atArgumentLabel(allowDollarIdentifier: true) {
+    if allowReceiver, self.at(.keyword(.self)) {
+      (unexpectedBeforeSecondName, secondName) = (nil, self.consumeAnyToken())
+    } else if self.atArgumentLabel(allowDollarIdentifier: true) {
       (unexpectedBeforeSecondName, secondName) = self.parseArgumentLabel()
     } else {
       (unexpectedBeforeSecondName, secondName) = (nil, nil)
@@ -193,7 +197,7 @@ extension Parser {
     let modifiers = parseParameterModifiers(isClosure: true)
     let misplacedSpecifiers = parseMisplacedSpecifiers()
 
-    let names = self.parseParameterNames()
+    let names = self.parseParameterNames(allowReceiver: self.languageFeatures.contains(.closureReceiverParameters))
     var colon = self.consume(if: .colon)
     // try to parse the type regardless of the presence of the preceding colon
     // to tackle any unnamed parameter or missing colon
