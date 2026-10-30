@@ -13,7 +13,7 @@ receiver lookup, capture, ownership, or lifetime semantics.
 
 ## Validation
 
-The full SwiftParser suite passed 2,759 tests, with 3 skipped and no failures,
+The local macOS SwiftParser suite passed: 2,759 tests, 3 skipped, 0 failures,
 including 22 receiver tests, with raw-syntax validation enabled. CodeGeneration's
 16 `ValidateSyntaxNodes` tests also passed. Sources were regenerated using the
 repository's generator. A branch-specific GitHub Actions workflow repeats the

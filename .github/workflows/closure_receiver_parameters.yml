@@ -44,4 +44,4 @@ jobs:
       - name: Verify generated sources
         run: |
           swift run --package-path CodeGeneration -j 2 generate-swift-syntax
-          git diff --exit-code
+          git -c safe.directory="$GITHUB_WORKSPACE" -C "$GITHUB_WORKSPACE" diff --exit-code
