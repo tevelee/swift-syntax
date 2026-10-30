@@ -24,7 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     container:
-      image: swift:latest
+      # Swift 6.4.1, recorded from the initial CI run.
+      image: swift@sha256:82152e9f18ee21fc997fd4580b93a14097e465cb10d7a7eee3f2dc85364dd135
     env:
       SKIP_LONG_TESTS: '1'
       SWIFTSYNTAX_ENABLE_RAWSYNTAX_VALIDATION: '1'
@@ -35,7 +36,9 @@ jobs:
       - name: Record toolchain
         run: swift --version
       - name: Test parser
-        run: swift test -j 2 --filter SwiftParserTest
+        # Serial SwiftPM filtering expands the whole suite into one argument,
+        # exceeding Linux's per-argument size limit. Workers run one test each.
+        run: swift test -j 2 --parallel --num-workers 2 --filter SwiftParserTest
       - name: Test schema
         run: swift test --package-path CodeGeneration -j 2 --filter ValidateSyntaxNodes
       - name: Verify generated sources
