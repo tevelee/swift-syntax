@@ -8,8 +8,9 @@ ordinary escaped `` `self` `` parameter. Without the feature, existing typed
 
 The companion compiler sketch is
 [tevelee/swift, feature/closure-receiver-parameters](https://github.com/tevelee/swift/tree/feature/closure-receiver-parameters).
-**That compiler has not yet been built or executed.** Parser tests do not prove
-receiver lookup, capture, ownership, or lifetime semantics.
+The compiler prototype has now passed targeted local compiler and runtime tests;
+see its [validation record](https://github.com/tevelee/swift/blob/feature/closure-receiver-parameters/docs/ClosureReceiverParameters.md).
+The parser results below independently establish syntax/schema behavior.
 
 ## Validation
 
