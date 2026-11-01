@@ -1,36 +1,26 @@
-# Receiver function types: experimental parser POC
+# Closure receiver bindings: experimental parser prototype
 
-The `ClosureReceiverParameters` feature now parses Kotlin-style receiver
-function types:
+The `ClosureReceiverParameters` feature preserves an unescaped `self` keyword in a closure's local parameter-name position:
 
 ```swift
-func with<T, R>(_ value: T, _ body: T.() throws -> R) rethrows -> R {
-  try body(value)
-}
-let render: Document.(Theme) -> String = { theme in title + theme.separator }
-let configure: (inout Configuration).() -> Void = { timeout = 30 }
+values.map { self in title }
+values.reduce(into: Report()) { self, value in append(value) }
+let callback: (Theme, Document) -> String = { theme, self in title + theme.separator }
 ```
 
-`FunctionTypeSyntax` stores an optional `receiver` and separating `period`.
-The receiver is separate from the ordinary parameter list in the syntax tree.
-The companion [compiler branch](https://github.com/tevelee/swift/tree/feature/closure-receiver-parameters)
-provides the experimental contextual binding, type marker, lookup, and lowering.
-The [proposal draft](https://github.com/tevelee/swift-evolution/blob/feature/closure-receiver-parameters/proposals/0000-closure-receiver-parameters.md)
-uses receiver function types as its primary design.
+The selected parameter still belongs to an ordinary function type. Both shorthand and typed forms are parsed, including borrowing/consuming/inout modifiers, capture aliases, and receiver selection in any parameter position. Escaped `self` remains an ordinary identifier. Feature-disabled typed self keeps its previous token representation.
 
-The earlier explicit-binder parser tests remain as a regression baseline; this
-does not mean both syntaxes are proposed for adoption.
+The [compiler prototype](https://github.com/tevelee/swift/tree/feature/closure-receiver-parameters) implements receiver-role selection, deferred member lookup, and capture checks. The [pitch](https://github.com/tevelee/swift-evolution/blob/feature/closure-receiver-parameters/proposals/0000-closure-receiver-parameters.md) records the unresolved typed-self compatibility decision.
+
+Revision 0.11 removes receiver-function type grammar and the generated FunctionTypeSyntax receiver/period fields. `@receiver` and dotted callback invocation are not part of this design. Parser acceptance of generic attribute syntax does not imply semantic support for an attribute.
 
 ## Validation
 
-Local SwiftParser suite: 2,762 tests, 3 skipped, zero failures, including 25
-receiver test methods. All 16 CodeGeneration schema tests passed. Generated
-sources are produced with the repository's generator. These checks establish
-parser/schema behavior, separately from the compiler's semantic tests.
+Targeted parser tests: 49 passed, including 24 receiver test methods. The full parser run scheduled 2,761 tests with zero failures (three long corpus tests disabled); all 16 CodeGeneration schema tests passed, and generated files reproduce exactly. Logs are recorded in the compiler implementation record. Parser success is separate from compiler semantic/runtime validation.
 
 ```sh
-SKIP_LONG_TESTS=1 SWIFTSYNTAX_ENABLE_RAWSYNTAX_VALIDATION=1 swift test -j 4 \
-  --filter SwiftParserTest
-swift test --package-path CodeGeneration -j 4 --filter ValidateSyntaxNodes
-swift run --package-path CodeGeneration -j 4 generate-swift-syntax
+SKIP_LONG_TESTS=1 SWIFTSYNTAX_ENABLE_RAWSYNTAX_VALIDATION=1 swift test -j 2 \
+  --filter SwiftParserTest --parallel --num-workers 2
+swift test --package-path CodeGeneration -j 2 --filter ValidateSyntaxNodes
+swift run --package-path CodeGeneration -j 2 generate-swift-syntax
 ```

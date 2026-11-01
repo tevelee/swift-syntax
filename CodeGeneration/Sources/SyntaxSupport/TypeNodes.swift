@@ -191,8 +191,6 @@ public let TYPE_NODES: [Node] = [
       "Parenthesized"
     ],
     children: [
-      Child(name: "receiver", kind: .node(kind: .type), isOptional: true),
-      Child(name: "period", kind: .token(choices: [.token(.period)]), isOptional: true),
       Child(
         name: "leftParen",
         kind: .token(choices: [.token(.leftParen)])

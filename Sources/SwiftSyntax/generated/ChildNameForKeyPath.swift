@@ -1534,16 +1534,8 @@ public func childName(_ keyPath: AnyKeyPath) -> String? {
     return "returnClause"
   case \FunctionSignatureSyntax.unexpectedAfterReturnClause:
     return "unexpectedAfterReturnClause"
-  case \FunctionTypeSyntax.unexpectedBeforeReceiver:
-    return "unexpectedBeforeReceiver"
-  case \FunctionTypeSyntax.receiver:
-    return "receiver"
-  case \FunctionTypeSyntax.unexpectedBetweenReceiverAndPeriod:
-    return "unexpectedBetweenReceiverAndPeriod"
-  case \FunctionTypeSyntax.period:
-    return "period"
-  case \FunctionTypeSyntax.unexpectedBetweenPeriodAndLeftParen:
-    return "unexpectedBetweenPeriodAndLeftParen"
+  case \FunctionTypeSyntax.unexpectedBeforeLeftParen:
+    return "unexpectedBeforeLeftParen"
   case \FunctionTypeSyntax.leftParen:
     return "leftParen"
   case \FunctionTypeSyntax.unexpectedBetweenLeftParenAndParameters:
