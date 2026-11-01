@@ -3483,7 +3483,11 @@ extension FunctionTypeSyntax {
 
   public init(
     leadingTrivia: Trivia? = nil,
-    _ unexpectedBeforeLeftParen: UnexpectedNodesSyntax? = nil,
+    _ unexpectedBeforeReceiver: UnexpectedNodesSyntax? = nil,
+    receiver: (some TypeSyntaxProtocol)? = TypeSyntax?.none,
+    _ unexpectedBetweenReceiverAndPeriod: UnexpectedNodesSyntax? = nil,
+    period: TokenSyntax? = nil,
+    _ unexpectedBetweenPeriodAndLeftParen: UnexpectedNodesSyntax? = nil,
     leftParen: TokenSyntax = .leftParenToken(),
     _ unexpectedBetweenLeftParenAndParameters: UnexpectedNodesSyntax? = nil,
     parameters: TupleTypeElementListSyntax,
@@ -3498,7 +3502,11 @@ extension FunctionTypeSyntax {
   ) {
     self.init(
       leadingTrivia: leadingTrivia,
-      unexpectedBeforeLeftParen,
+      unexpectedBeforeReceiver,
+      receiver: receiver,
+      unexpectedBetweenReceiverAndPeriod,
+      period: period,
+      unexpectedBetweenPeriodAndLeftParen,
       leftParen: leftParen,
       unexpectedBetweenLeftParenAndParameters,
       parameters: parameters,
@@ -3515,11 +3523,15 @@ extension FunctionTypeSyntax {
     )
   }
 
-  @available(*, deprecated, renamed: "init(leadingTrivia:_:leftParen:_:parameters:_:rightParen:_:effectSpecifiers:_:yieldClause:_:returnClause:_:trailingTrivia:)")
+  @available(*, deprecated, renamed: "init(leadingTrivia:_:receiver:_:period:_:leftParen:_:parameters:_:rightParen:_:effectSpecifiers:_:yieldClause:_:returnClause:_:trailingTrivia:)")
   @_disfavoredOverload
   public init(
     leadingTrivia: Trivia? = nil,
-    _ unexpectedBeforeLeftParen: UnexpectedNodesSyntax? = nil,
+    _ unexpectedBeforeReceiver: UnexpectedNodesSyntax? = nil,
+    receiver: (some TypeSyntaxProtocol)? = TypeSyntax?.none,
+    _ unexpectedBetweenReceiverAndPeriod: UnexpectedNodesSyntax? = nil,
+    period: TokenSyntax? = nil,
+    _ unexpectedBetweenPeriodAndLeftParen: UnexpectedNodesSyntax? = nil,
     leftParen: TokenSyntax = .leftParenToken(),
     _ unexpectedBetweenLeftParenAndArguments: UnexpectedNodesSyntax? = nil,
     arguments: TupleTypeElementListSyntax,
@@ -3534,7 +3546,11 @@ extension FunctionTypeSyntax {
   ) {
     self.init(
       leadingTrivia: leadingTrivia,
-      unexpectedBeforeLeftParen,
+      unexpectedBeforeReceiver,
+      receiver: receiver,
+      unexpectedBetweenReceiverAndPeriod,
+      period: period,
+      unexpectedBetweenPeriodAndLeftParen,
       leftParen: leftParen,
       unexpectedBetweenLeftParenAndArguments,
       parameters: arguments,

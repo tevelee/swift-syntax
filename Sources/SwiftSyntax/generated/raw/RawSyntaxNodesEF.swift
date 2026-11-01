@@ -2646,7 +2646,11 @@ public struct RawFunctionTypeSyntax: RawTypeSyntaxNodeProtocol {
   }
 
   public init(
-    _ unexpectedBeforeLeftParen: RawUnexpectedNodesSyntax? = nil,
+    _ unexpectedBeforeReceiver: RawUnexpectedNodesSyntax? = nil,
+    receiver: RawTypeSyntax?,
+    _ unexpectedBetweenReceiverAndPeriod: RawUnexpectedNodesSyntax? = nil,
+    period: RawTokenSyntax?,
+    _ unexpectedBetweenPeriodAndLeftParen: RawUnexpectedNodesSyntax? = nil,
     leftParen: RawTokenSyntax,
     _ unexpectedBetweenLeftParenAndParameters: RawUnexpectedNodesSyntax? = nil,
     parameters: RawTupleTypeElementListSyntax,
@@ -2661,82 +2665,102 @@ public struct RawFunctionTypeSyntax: RawTypeSyntaxNodeProtocol {
     _ unexpectedAfterReturnClause: RawUnexpectedNodesSyntax? = nil,
     arena: __shared RawSyntaxArena
   ) {
-    let hasUnexpected = unexpectedBeforeLeftParen != nil || unexpectedBetweenLeftParenAndParameters != nil || unexpectedBetweenParametersAndRightParen != nil || unexpectedBetweenRightParenAndEffectSpecifiers != nil || unexpectedBetweenEffectSpecifiersAndYieldClause != nil || unexpectedBetweenYieldClauseAndReturnClause != nil || unexpectedAfterReturnClause != nil
+    let hasUnexpected = unexpectedBeforeReceiver != nil || unexpectedBetweenReceiverAndPeriod != nil || unexpectedBetweenPeriodAndLeftParen != nil || unexpectedBetweenLeftParenAndParameters != nil || unexpectedBetweenParametersAndRightParen != nil || unexpectedBetweenRightParenAndEffectSpecifiers != nil || unexpectedBetweenEffectSpecifiersAndYieldClause != nil || unexpectedBetweenYieldClauseAndReturnClause != nil || unexpectedAfterReturnClause != nil
     let raw = RawSyntax.makeLayout(
       kind: .functionType,
-      childCount: 6,
+      childCount: 8,
       storage: hasUnexpected ? .layoutWithUnexpected : .layout,
       arena: arena
     ) { layout in
-      layout.initializeElement(at: 0, to: leftParen.raw)
-      layout.initializeElement(at: 1, to: parameters.raw)
-      layout.initializeElement(at: 2, to: rightParen.raw)
-      layout.initializeElement(at: 3, to: effectSpecifiers?.raw)
-      layout.initializeElement(at: 4, to: yieldClause?.raw)
-      layout.initializeElement(at: 5, to: returnClause.raw)
+      layout.initializeElement(at: 0, to: receiver?.raw)
+      layout.initializeElement(at: 1, to: period?.raw)
+      layout.initializeElement(at: 2, to: leftParen.raw)
+      layout.initializeElement(at: 3, to: parameters.raw)
+      layout.initializeElement(at: 4, to: rightParen.raw)
+      layout.initializeElement(at: 5, to: effectSpecifiers?.raw)
+      layout.initializeElement(at: 6, to: yieldClause?.raw)
+      layout.initializeElement(at: 7, to: returnClause.raw)
       if hasUnexpected {
-        layout.initializeElement(at: 6, to: unexpectedBeforeLeftParen?.raw)
-        layout.initializeElement(at: 7, to: unexpectedBetweenLeftParenAndParameters?.raw)
-        layout.initializeElement(at: 8, to: unexpectedBetweenParametersAndRightParen?.raw)
-        layout.initializeElement(at: 9, to: unexpectedBetweenRightParenAndEffectSpecifiers?.raw)
-        layout.initializeElement(at: 10, to: unexpectedBetweenEffectSpecifiersAndYieldClause?.raw)
-        layout.initializeElement(at: 11, to: unexpectedBetweenYieldClauseAndReturnClause?.raw)
-        layout.initializeElement(at: 12, to: unexpectedAfterReturnClause?.raw)
+        layout.initializeElement(at: 8, to: unexpectedBeforeReceiver?.raw)
+        layout.initializeElement(at: 9, to: unexpectedBetweenReceiverAndPeriod?.raw)
+        layout.initializeElement(at: 10, to: unexpectedBetweenPeriodAndLeftParen?.raw)
+        layout.initializeElement(at: 11, to: unexpectedBetweenLeftParenAndParameters?.raw)
+        layout.initializeElement(at: 12, to: unexpectedBetweenParametersAndRightParen?.raw)
+        layout.initializeElement(at: 13, to: unexpectedBetweenRightParenAndEffectSpecifiers?.raw)
+        layout.initializeElement(at: 14, to: unexpectedBetweenEffectSpecifiersAndYieldClause?.raw)
+        layout.initializeElement(at: 15, to: unexpectedBetweenYieldClauseAndReturnClause?.raw)
+        layout.initializeElement(at: 16, to: unexpectedAfterReturnClause?.raw)
       }
     }
     self.init(unchecked: raw)
   }
 
-  public var unexpectedBeforeLeftParen: RawUnexpectedNodesSyntax? {
+  public var unexpectedBeforeReceiver: RawUnexpectedNodesSyntax? {
     layoutView.unexpectedSlot(at: 0).map(RawUnexpectedNodesSyntax.init(raw:))
   }
 
-  public var leftParen: RawTokenSyntax {
-    layoutView.realChild(at: 0).map(RawTokenSyntax.init(raw:))!
+  public var receiver: RawTypeSyntax? {
+    layoutView.realChild(at: 0).map(RawTypeSyntax.init(raw:))
   }
 
-  public var unexpectedBetweenLeftParenAndParameters: RawUnexpectedNodesSyntax? {
+  public var unexpectedBetweenReceiverAndPeriod: RawUnexpectedNodesSyntax? {
     layoutView.unexpectedSlot(at: 1).map(RawUnexpectedNodesSyntax.init(raw:))
   }
 
-  public var parameters: RawTupleTypeElementListSyntax {
-    layoutView.realChild(at: 1).map(RawTupleTypeElementListSyntax.init(raw:))!
+  public var period: RawTokenSyntax? {
+    layoutView.realChild(at: 1).map(RawTokenSyntax.init(raw:))
   }
 
-  public var unexpectedBetweenParametersAndRightParen: RawUnexpectedNodesSyntax? {
+  public var unexpectedBetweenPeriodAndLeftParen: RawUnexpectedNodesSyntax? {
     layoutView.unexpectedSlot(at: 2).map(RawUnexpectedNodesSyntax.init(raw:))
   }
 
-  public var rightParen: RawTokenSyntax {
+  public var leftParen: RawTokenSyntax {
     layoutView.realChild(at: 2).map(RawTokenSyntax.init(raw:))!
   }
 
-  public var unexpectedBetweenRightParenAndEffectSpecifiers: RawUnexpectedNodesSyntax? {
+  public var unexpectedBetweenLeftParenAndParameters: RawUnexpectedNodesSyntax? {
     layoutView.unexpectedSlot(at: 3).map(RawUnexpectedNodesSyntax.init(raw:))
   }
 
-  public var effectSpecifiers: RawTypeEffectSpecifiersSyntax? {
-    layoutView.realChild(at: 3).map(RawTypeEffectSpecifiersSyntax.init(raw:))
+  public var parameters: RawTupleTypeElementListSyntax {
+    layoutView.realChild(at: 3).map(RawTupleTypeElementListSyntax.init(raw:))!
   }
 
-  public var unexpectedBetweenEffectSpecifiersAndYieldClause: RawUnexpectedNodesSyntax? {
+  public var unexpectedBetweenParametersAndRightParen: RawUnexpectedNodesSyntax? {
     layoutView.unexpectedSlot(at: 4).map(RawUnexpectedNodesSyntax.init(raw:))
   }
 
-  public var yieldClause: RawFunctionYieldClauseSyntax? {
-    layoutView.realChild(at: 4).map(RawFunctionYieldClauseSyntax.init(raw:))
+  public var rightParen: RawTokenSyntax {
+    layoutView.realChild(at: 4).map(RawTokenSyntax.init(raw:))!
   }
 
-  public var unexpectedBetweenYieldClauseAndReturnClause: RawUnexpectedNodesSyntax? {
+  public var unexpectedBetweenRightParenAndEffectSpecifiers: RawUnexpectedNodesSyntax? {
     layoutView.unexpectedSlot(at: 5).map(RawUnexpectedNodesSyntax.init(raw:))
   }
 
+  public var effectSpecifiers: RawTypeEffectSpecifiersSyntax? {
+    layoutView.realChild(at: 5).map(RawTypeEffectSpecifiersSyntax.init(raw:))
+  }
+
+  public var unexpectedBetweenEffectSpecifiersAndYieldClause: RawUnexpectedNodesSyntax? {
+    layoutView.unexpectedSlot(at: 6).map(RawUnexpectedNodesSyntax.init(raw:))
+  }
+
+  public var yieldClause: RawFunctionYieldClauseSyntax? {
+    layoutView.realChild(at: 6).map(RawFunctionYieldClauseSyntax.init(raw:))
+  }
+
+  public var unexpectedBetweenYieldClauseAndReturnClause: RawUnexpectedNodesSyntax? {
+    layoutView.unexpectedSlot(at: 7).map(RawUnexpectedNodesSyntax.init(raw:))
+  }
+
   public var returnClause: RawReturnClauseSyntax {
-    layoutView.realChild(at: 5).map(RawReturnClauseSyntax.init(raw:))!
+    layoutView.realChild(at: 7).map(RawReturnClauseSyntax.init(raw:))!
   }
 
   public var unexpectedAfterReturnClause: RawUnexpectedNodesSyntax? {
-    layoutView.unexpectedSlot(at: 6).map(RawUnexpectedNodesSyntax.init(raw:))
+    layoutView.unexpectedSlot(at: 8).map(RawUnexpectedNodesSyntax.init(raw:))
   }
 }
 

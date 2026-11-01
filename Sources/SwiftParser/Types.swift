@@ -33,7 +33,15 @@ extension Parser {
   mutating func parseTypeScalar(misplacedSpecifiers: [RawTokenSyntax] = []) -> RawTypeSyntax {
     let specifiersAndAttributes = self.parseTypeAttributeList(misplacedSpecifiers: misplacedSpecifiers)
     var base = self.parseSimpleOrCompositionType()
-    if self.withLookahead({ $0.canParseFunctionTypeArrow() }) {
+    var receiverType: RawTypeSyntax? = nil
+    var receiverPeriod: RawTokenSyntax? = nil
+    if self.languageFeatures.contains(.closureReceiverParameters)
+      && self.at(.period) && self.peek(isAt: .leftParen) {
+      receiverType = base
+      receiverPeriod = self.consumeAnyToken()
+      base = RawTypeSyntax(self.parseTupleTypeBody())
+    }
+    if receiverType != nil || self.withLookahead({ $0.canParseFunctionTypeArrow() }) {
       var (effectSpecifiers, yields) = self.parseTypeEffectSpecifiers()
       let returnClause = self.parseFunctionReturnClause(
         effectSpecifiers: &effectSpecifiers,
@@ -78,6 +86,8 @@ extension Parser {
 
       base = RawTypeSyntax(
         RawFunctionTypeSyntax(
+          receiver: receiverType,
+          period: receiverPeriod,
           unexpectedBeforeLeftParen,
           leftParen: leftParen,
           unexpectedBetweenLeftParenAndElements,
@@ -381,6 +391,10 @@ extension Parser {
 
     var loopProgress = LoopProgressCondition()
     while self.hasProgressed(&loopProgress) {
+      if self.languageFeatures.contains(.closureReceiverParameters)
+        && self.at(.period) && self.peek(isAt: .leftParen) {
+        break
+      }
       if self.at(.period) && (allowMemberTypes || self.peek(isAt: .keyword(.Type), .keyword(.Protocol))) {
         let (unexpectedPeriod, period, skipMemberName) = self.consumeMemberPeriod(previousNode: base)
         if skipMemberName {
@@ -978,6 +992,13 @@ extension Parser.Lookahead {
       return false
     }
 
+    if self.languageFeatures.contains(.closureReceiverParameters)
+      && self.at(.period) && self.peek(isAt: .leftParen) {
+      self.consumeAnyToken()
+      self.consumeAnyToken()
+      guard self.canParseTupleBodyType() else { return false }
+    }
+
     if self.canParseFunctionTypeArrow() {
       return self.canParseType()
     }
@@ -1040,6 +1061,10 @@ extension Parser.Lookahead {
 
     var loopProgress = LoopProgressCondition()
     while self.hasProgressed(&loopProgress) {
+      if self.languageFeatures.contains(.closureReceiverParameters)
+        && self.at(.period) && self.peek(isAt: .leftParen) {
+        break
+      }
       if self.at(.period) {
         self.consumeAnyToken()
         if self.at(.keyword(.Type)) || self.at(.keyword(.Protocol)) {

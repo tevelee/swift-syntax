@@ -17,6 +17,36 @@ import XCTest
 final class ClosureReceiverParameterTests: ParserTestCase {
   override var languageFeatures: Parser.LanguageFeatures { [.closureReceiverParameters] }
 
+  func testReceiverFunctionTypes() {
+    assertParse("typealias Action = Item.() -> Void")
+    assertParse("typealias Render = Document.(Theme) async throws -> String")
+    assertParse("typealias Configure = (inout Item).() -> Void")
+    assertParse("typealias Inspect = (borrowing Resource).() -> Int")
+    assertParse("func with<T, R>(_ value: T, _ body: T.() throws -> R) rethrows -> R { try body(value) }")
+    assertParse("let callback: Optional<Item.() -> Int> = { count }")
+  }
+
+  func testReceiverFunctionTypeStructure() {
+    let source = "typealias Render = Document.(Theme) -> String"
+    let tree = Parser.parse(source: source, languageFeatures: languageFeatures)
+    let type = tree.statements.first?.item.as(TypeAliasDeclSyntax.self)?
+      .initializer.value.as(FunctionTypeSyntax.self)
+    XCTAssertEqual(type?.receiver?.trimmedDescription, "Document")
+    XCTAssertEqual(type?.parameters.count, 1)
+    XCTAssertEqual(type?.parameters.first?.type.trimmedDescription, "Theme")
+    XCTAssertEqual(tree.description, source)
+    XCTAssertFalse(tree.hasError)
+  }
+
+  func testReceiverFunctionTypeRecoveryAndGate() {
+    let valid = "typealias Action = Item.() -> Void"
+    XCTAssertTrue(Parser.parse(source: valid, languageFeatures: []).hasError)
+    let missingResult = "typealias Action = Item.()"
+    let tree = Parser.parse(source: missingResult, languageFeatures: languageFeatures)
+    XCTAssertTrue(tree.hasError)
+    XCTAssertEqual(tree.description, missingResult)
+  }
+
   func testShorthandReceiver() {
     assertParse("_ = { self in self.value }")
   }
