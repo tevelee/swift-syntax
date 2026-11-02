@@ -160,6 +160,7 @@ extension Parser {
             remainingTokens,
             label: nil,
             colon: nil,
+            eachKeyword: nil,
             pattern: RawMissingPatternSyntax(arena: self.arena),
             trailingComma: nil,
             arena: self.arena
@@ -179,11 +180,23 @@ extension Parser {
 
         /// If we have something like `x SomeType`, use the indication that `SomeType` starts with a capital letter (and is thus probably a type name)
         /// as an indication that the user forgot to write the colon instead of forgetting to write the comma to separate two elements.
-        if label == nil, colon == nil, self.at(.identifier), peek(isAt: .identifier),
+        if label == nil, colon == nil,
+          !(self.languageFeatures.contains(.packDestructuring) && self.at(.keyword(.each))),
+          self.at(.identifier), peek(isAt: .identifier),
           peek().tokenText.isStartingWithUppercase
         {
           label = consume(if: .identifier)
           colon = self.missingToken(.colon)
+        }
+
+        let eachKeyword: RawTokenSyntax?
+        if self.languageFeatures.contains(.packDestructuring),
+          self.at(.keyword(.each)),
+          self.peek(isAt: .identifier, .wildcard)
+        {
+          eachKeyword = self.consume(if: .keyword(.each))
+        } else {
+          eachKeyword = nil
         }
 
         let pattern = self.parsePattern()
@@ -198,6 +211,7 @@ extension Parser {
           RawTuplePatternElementSyntax(
             label: label,
             colon: colon,
+            eachKeyword: eachKeyword,
             pattern: pattern,
             trailingComma: trailingComma,
             arena: self.arena

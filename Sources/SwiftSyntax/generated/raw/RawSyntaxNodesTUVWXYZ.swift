@@ -645,30 +645,34 @@ public struct RawTuplePatternElementSyntax: RawSyntaxNodeProtocol {
     label: RawTokenSyntax?,
     _ unexpectedBetweenLabelAndColon: RawUnexpectedNodesSyntax? = nil,
     colon: RawTokenSyntax?,
-    _ unexpectedBetweenColonAndPattern: RawUnexpectedNodesSyntax? = nil,
+    _ unexpectedBetweenColonAndEachKeyword: RawUnexpectedNodesSyntax? = nil,
+    eachKeyword: RawTokenSyntax?,
+    _ unexpectedBetweenEachKeywordAndPattern: RawUnexpectedNodesSyntax? = nil,
     pattern: some RawPatternSyntaxNodeProtocol,
     _ unexpectedBetweenPatternAndTrailingComma: RawUnexpectedNodesSyntax? = nil,
     trailingComma: RawTokenSyntax?,
     _ unexpectedAfterTrailingComma: RawUnexpectedNodesSyntax? = nil,
     arena: __shared RawSyntaxArena
   ) {
-    let hasUnexpected = unexpectedBeforeLabel != nil || unexpectedBetweenLabelAndColon != nil || unexpectedBetweenColonAndPattern != nil || unexpectedBetweenPatternAndTrailingComma != nil || unexpectedAfterTrailingComma != nil
+    let hasUnexpected = unexpectedBeforeLabel != nil || unexpectedBetweenLabelAndColon != nil || unexpectedBetweenColonAndEachKeyword != nil || unexpectedBetweenEachKeywordAndPattern != nil || unexpectedBetweenPatternAndTrailingComma != nil || unexpectedAfterTrailingComma != nil
     let raw = RawSyntax.makeLayout(
       kind: .tuplePatternElement,
-      childCount: 4,
+      childCount: 5,
       storage: hasUnexpected ? .layoutWithUnexpected : .layout,
       arena: arena
     ) { layout in
       layout.initializeElement(at: 0, to: label?.raw)
       layout.initializeElement(at: 1, to: colon?.raw)
-      layout.initializeElement(at: 2, to: pattern.raw)
-      layout.initializeElement(at: 3, to: trailingComma?.raw)
+      layout.initializeElement(at: 2, to: eachKeyword?.raw)
+      layout.initializeElement(at: 3, to: pattern.raw)
+      layout.initializeElement(at: 4, to: trailingComma?.raw)
       if hasUnexpected {
-        layout.initializeElement(at: 4, to: unexpectedBeforeLabel?.raw)
-        layout.initializeElement(at: 5, to: unexpectedBetweenLabelAndColon?.raw)
-        layout.initializeElement(at: 6, to: unexpectedBetweenColonAndPattern?.raw)
-        layout.initializeElement(at: 7, to: unexpectedBetweenPatternAndTrailingComma?.raw)
-        layout.initializeElement(at: 8, to: unexpectedAfterTrailingComma?.raw)
+        layout.initializeElement(at: 5, to: unexpectedBeforeLabel?.raw)
+        layout.initializeElement(at: 6, to: unexpectedBetweenLabelAndColon?.raw)
+        layout.initializeElement(at: 7, to: unexpectedBetweenColonAndEachKeyword?.raw)
+        layout.initializeElement(at: 8, to: unexpectedBetweenEachKeywordAndPattern?.raw)
+        layout.initializeElement(at: 9, to: unexpectedBetweenPatternAndTrailingComma?.raw)
+        layout.initializeElement(at: 10, to: unexpectedAfterTrailingComma?.raw)
       }
     }
     self.init(unchecked: raw)
@@ -690,24 +694,32 @@ public struct RawTuplePatternElementSyntax: RawSyntaxNodeProtocol {
     layoutView.realChild(at: 1).map(RawTokenSyntax.init(raw:))
   }
 
-  public var unexpectedBetweenColonAndPattern: RawUnexpectedNodesSyntax? {
+  public var unexpectedBetweenColonAndEachKeyword: RawUnexpectedNodesSyntax? {
     layoutView.unexpectedSlot(at: 2).map(RawUnexpectedNodesSyntax.init(raw:))
   }
 
-  public var pattern: RawPatternSyntax {
-    layoutView.realChild(at: 2).map(RawPatternSyntax.init(raw:))!
+  public var eachKeyword: RawTokenSyntax? {
+    layoutView.realChild(at: 2).map(RawTokenSyntax.init(raw:))
   }
 
-  public var unexpectedBetweenPatternAndTrailingComma: RawUnexpectedNodesSyntax? {
+  public var unexpectedBetweenEachKeywordAndPattern: RawUnexpectedNodesSyntax? {
     layoutView.unexpectedSlot(at: 3).map(RawUnexpectedNodesSyntax.init(raw:))
   }
 
+  public var pattern: RawPatternSyntax {
+    layoutView.realChild(at: 3).map(RawPatternSyntax.init(raw:))!
+  }
+
+  public var unexpectedBetweenPatternAndTrailingComma: RawUnexpectedNodesSyntax? {
+    layoutView.unexpectedSlot(at: 4).map(RawUnexpectedNodesSyntax.init(raw:))
+  }
+
   public var trailingComma: RawTokenSyntax? {
-    layoutView.realChild(at: 3).map(RawTokenSyntax.init(raw:))
+    layoutView.realChild(at: 4).map(RawTokenSyntax.init(raw:))
   }
 
   public var unexpectedAfterTrailingComma: RawUnexpectedNodesSyntax? {
-    layoutView.unexpectedSlot(at: 4).map(RawUnexpectedNodesSyntax.init(raw:))
+    layoutView.unexpectedSlot(at: 5).map(RawUnexpectedNodesSyntax.init(raw:))
   }
 }
 

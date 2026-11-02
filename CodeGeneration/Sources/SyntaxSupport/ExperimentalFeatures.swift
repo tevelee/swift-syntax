@@ -28,6 +28,7 @@ public enum ExperimentalFeature: String, CaseIterable {
   case coroutineFunctions
   case extendedSpecializedAttribute
   case closureReceiverParameters
+  case packDestructuring
 
   /// The name of the feature as it is written in the compiler's `Features.def` file.
   public var featureName: String {
@@ -62,6 +63,8 @@ public enum ExperimentalFeature: String, CaseIterable {
       return "ExtendedSpecializedAttribute"
     case .closureReceiverParameters:
       return "ClosureReceiverParameters"
+    case .packDestructuring:
+      return "PackDestructuring"
     }
   }
 
@@ -98,6 +101,8 @@ public enum ExperimentalFeature: String, CaseIterable {
       return "`exported:` argument of the `@specialized` attribute"
     case .closureReceiverParameters:
       return "explicit receiver parameters in closures"
+    case .packDestructuring:
+      return "tuple pack destructuring bindings"
     }
   }
 

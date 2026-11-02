@@ -3378,8 +3378,12 @@ public func childName(_ keyPath: AnyKeyPath) -> String? {
     return "unexpectedBetweenLabelAndColon"
   case \TuplePatternElementSyntax.colon:
     return "colon"
-  case \TuplePatternElementSyntax.unexpectedBetweenColonAndPattern:
-    return "unexpectedBetweenColonAndPattern"
+  case \TuplePatternElementSyntax.unexpectedBetweenColonAndEachKeyword:
+    return "unexpectedBetweenColonAndEachKeyword"
+  case \TuplePatternElementSyntax.eachKeyword:
+    return "eachKeyword"
+  case \TuplePatternElementSyntax.unexpectedBetweenEachKeywordAndPattern:
+    return "unexpectedBetweenEachKeywordAndPattern"
   case \TuplePatternElementSyntax.pattern:
     return "pattern"
   case \TuplePatternElementSyntax.unexpectedBetweenPatternAndTrailingComma:

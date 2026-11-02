@@ -121,6 +121,13 @@ public let PATTERN_NODES: [Node] = [
         isOptional: true
       ),
       Child(
+        name: "eachKeyword",
+        kind: .token(choices: [.keyword(.each)]),
+        experimentalFeature: .packDestructuring,
+        documentation: "Marks a binding to an existing tuple pack expansion.",
+        isOptional: true
+      ),
+      Child(
         name: "pattern",
         kind: .node(kind: .pattern),
         documentation: "The value of this labeled pattern."

@@ -8311,6 +8311,15 @@ extension TupleExprSyntax {
 }
 
 extension TuplePatternElementSyntax {
+  public var unexpectedBetweenColonAndPattern: UnexpectedNodesSyntax? {
+    get {
+      return unexpectedBetweenColonAndEachKeyword
+    }
+    set {
+      unexpectedBetweenColonAndEachKeyword = newValue
+    }
+  }
+
   @available(*, deprecated, renamed: "unexpectedBeforeLabel")
   public var unexpectedBeforeLabelName: UnexpectedNodesSyntax? {
     get {
@@ -8351,17 +8360,47 @@ extension TuplePatternElementSyntax {
     }
   }
 
-  @available(*, deprecated, renamed: "unexpectedBetweenColonAndPattern")
+  @available(*, deprecated, renamed: "unexpectedBetweenColonAndEachKeyword")
   public var unexpectedBetweenLabelColonAndPattern: UnexpectedNodesSyntax? {
     get {
-      return unexpectedBetweenColonAndPattern
+      return unexpectedBetweenColonAndEachKeyword
     }
     set {
-      unexpectedBetweenColonAndPattern = newValue
+      unexpectedBetweenColonAndEachKeyword = newValue
     }
   }
 
-  @available(*, deprecated, renamed: "init(leadingTrivia:_:label:_:colon:_:pattern:_:trailingComma:_:trailingTrivia:)")
+  public init(
+    leadingTrivia: Trivia? = nil,
+    _ unexpectedBeforeLabel: UnexpectedNodesSyntax? = nil,
+    label: TokenSyntax? = nil,
+    _ unexpectedBetweenLabelAndColon: UnexpectedNodesSyntax? = nil,
+    colon: TokenSyntax? = nil,
+    _ unexpectedBetweenColonAndPattern: UnexpectedNodesSyntax? = nil,
+    pattern: some PatternSyntaxProtocol,
+    _ unexpectedBetweenPatternAndTrailingComma: UnexpectedNodesSyntax? = nil,
+    trailingComma: TokenSyntax? = nil,
+    _ unexpectedAfterTrailingComma: UnexpectedNodesSyntax? = nil,
+    trailingTrivia: Trivia? = nil
+  ) {
+    self.init(
+      leadingTrivia: leadingTrivia,
+      unexpectedBeforeLabel,
+      label: label,
+      unexpectedBetweenLabelAndColon,
+      colon: colon,
+      unexpectedBetweenColonAndPattern,
+      eachKeyword: nil,
+      nil,
+      pattern: pattern,
+      unexpectedBetweenPatternAndTrailingComma,
+      trailingComma: trailingComma,
+      unexpectedAfterTrailingComma,
+      trailingTrivia: trailingTrivia
+    )
+  }
+
+  @available(*, deprecated, renamed: "init(leadingTrivia:_:label:_:colon:_:eachKeyword:_:pattern:_:trailingComma:_:trailingTrivia:)")
   @_disfavoredOverload
   public init(
     leadingTrivia: Trivia? = nil,
@@ -8383,6 +8422,8 @@ extension TuplePatternElementSyntax {
       unexpectedBetweenLabelNameAndLabelColon,
       colon: labelColon,
       unexpectedBetweenLabelColonAndPattern,
+      eachKeyword: nil,
+      nil,
       pattern: pattern,
       unexpectedBetweenPatternAndTrailingComma,
       trailingComma: trailingComma,

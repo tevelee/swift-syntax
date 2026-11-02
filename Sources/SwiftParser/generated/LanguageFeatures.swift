@@ -88,6 +88,10 @@ extension Parser.LanguageFeatures {
   @_spi(ExperimentalLanguageFeatures)
   public static let closureReceiverParameters = Self (rawValue: 1 << 14)
 
+  /// Whether to enable the parsing of tuple pack destructuring bindings.
+  @_spi(ExperimentalLanguageFeatures)
+  public static let packDestructuring = Self (rawValue: 1 << 15)
+
   /// Creates a new value representing the experimental feature with the
   /// given name, or returns nil if the name is not recognized.
   @_spi(ExperimentalLanguageFeatures)
@@ -123,6 +127,8 @@ extension Parser.LanguageFeatures {
       self = .extendedSpecializedAttribute
     case "ClosureReceiverParameters":
       self = .closureReceiverParameters
+    case "PackDestructuring":
+      self = .packDestructuring
     default:
       return nil
     }
